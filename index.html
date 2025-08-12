@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Snake Neo — Deluxe</title>
+    <meta name="description" content="A deluxe Snake game with leaderboard, admin panel, and slick design." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'%3E%3Cpath fill='%2300d09c' d='M30 60c0-16 12-28 28-28h20a20 20 0 1 1 0 40H62c-6 0-10 4-10 10 0 5 4 10 10 10h36v16H62c-16 0-32-12-32-30 0-10 5-18 12-23-4-4-6-9-6-15z'/%3E%3Ccircle cx='84' cy='36' r='6' fill='%23000'/%3E%3C/svg%3E" />
+    <!-- Tailwind CSS CDN (no build) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              display: ['Inter', 'ui-sans-serif', 'system-ui', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'Noto Sans', 'sans-serif'],
+            },
+            colors: {
+              neo: {
+                50: '#ecfdf5',
+                100: '#d1fae5',
+                200: '#a7f3d0',
+                300: '#6ee7b7',
+                400: '#34d399',
+                500: '#10b981',
+                600: '#059669',
+                700: '#047857',
+                800: '#065f46',
+                900: '#064e3b',
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body class="font-display bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 text-slate-100 min-h-screen selection:bg-neo-400/30 selection:text-white">
+    <!-- App Shell -->
+    <div class="min-h-screen flex flex-col">
+      <!-- Header -->
+      <header class="px-4 sm:px-6 py-4 border-b border-white/10 bg-slate-900/40 backdrop-blur supports-[backdrop-filter]:bg-slate-900/30">
+        <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-lg grid place-items-center bg-gradient-to-br from-neo-400 to-emerald-600 shadow-lg shadow-emerald-600/20">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 11c0-4 3-7 7-7h5a4 4 0 1 1 0 8h-6a3 3 0 1 0 0 6h10v3H10a7 7 0 0 1-6-10z" fill="currentColor"/>
+                <circle cx="15.5" cy="6.5" r="1" fill="#000"/>
+              </svg>
+            </div>
+            <div>
+              <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight">Snake Neo — Deluxe</h1>
+              <p class="text-slate-400 text-xs sm:text-sm">Fast. Polished. Feature-packed. Open the admin with the backquote (`) key.</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2 sm:gap-3">
+            <button id="btnHelp" class="px-3 sm:px-4 py-2 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-sm">Help</button>
+            <button id="btnSettings" class="px-3 sm:px-4 py-2 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-sm">Settings</button>
+            <button id="btnLeaderboard" class="px-3 sm:px-4 py-2 rounded-md bg-neo-500/90 hover:bg-neo-500 text-slate-900 font-semibold shadow">Leaderboard</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main -->
+      <main class="flex-1">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-6 grid lg:grid-cols-5 gap-6">
+          <!-- Left panel: Score and Achievements -->
+          <aside class="lg:col-span-1 space-y-6">
+            <section class="p-4 rounded-xl bg-white/5 border border-white/10">
+              <div class="flex items-center justify-between mb-2">
+                <h2 class="font-semibold">Score</h2>
+                <span id="hudSpeed" class="text-xs text-slate-400">1x</span>
+              </div>
+              <div class="text-4xl sm:text-5xl font-extrabold tabular-nums" id="hudScore">0</div>
+              <div class="mt-2 text-slate-400 text-sm flex items-center justify-between gap-2">
+                <span>Best: <span id="hudBest">0</span></span>
+                <span id="hudTimer" class="hidden text-slate-300">00:00</span>
+              </div>
+              <div class="mt-4 flex gap-2">
+                <button id="btnPause" class="px-3 py-2 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-sm">Pause (Space)</button>
+                <button id="btnReset" class="px-3 py-2 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-sm">Reset (R)</button>
+              </div>
+            </section>
+
+            <section class="p-4 rounded-xl bg-white/5 border border-white/10">
+              <div class="flex items-center justify-between mb-3">
+                <h2 class="font-semibold">Achievements</h2>
+                <button id="btnAchievements" class="text-xs text-slate-400 hover:text-slate-200">View</button>
+              </div>
+              <ul id="achievementsList" class="space-y-2 text-sm"></ul>
+            </section>
+          </aside>
+
+          <!-- Game canvas -->
+          <section class="lg:col-span-3">
+            <div class="relative rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-br from-slate-900 to-slate-800 shadow-xl">
+              <canvas id="game" class="w-full h-[60vh] sm:h-[70vh] block"></canvas>
+
+              <!-- Status overlay -->
+              <div id="overlay" class="pointer-events-none absolute inset-0 grid place-items-center">
+                <div id="overlayText" class="text-center opacity-0 transition-opacity duration-300">
+                  <h3 class="text-3xl sm:text-4xl font-extrabold drop-shadow">Press any arrow key to start</h3>
+                  <p class="text-slate-400 mt-2">WASD supported • Space to pause • ` for admin</p>
+                </div>
+              </div>
+
+              <!-- Mobile controls -->
+              <div class="absolute inset-x-0 bottom-2 sm:bottom-4 grid grid-cols-3 gap-2 px-3 sm:px-6">
+                <div class="flex justify-end">
+                  <button data-dir="left" class="touch-btn">◀</button>
+                </div>
+                <div class="flex justify-center gap-2">
+                  <button data-dir="up" class="touch-btn">▲</button>
+                  <button data-dir="down" class="touch-btn">▼</button>
+                </div>
+                <div class="flex justify-start">
+                  <button data-dir="right" class="touch-btn">▶</button>
+                </div>
+              </div>
+
+              <!-- Mobile quick controls -->
+              <div class="sm:hidden absolute top-2 inset-x-2 flex justify-between pointer-events-auto">
+                <button id="btnPauseMobile" class="px-2 py-1 rounded-md bg-white/10 hover:bg-white/20 border border-white/10 text-xs">Pause</button>
+                <button id="btnAdminMobile" class="px-2 py-1 rounded-md bg-white/10 hover:bg-white/20 border border-white/10 text-xs">Admin</button>
+              </div>
+            </div>
+          </section>
+
+          <!-- Right panel: Tips -->
+          <aside class="lg:col-span-1 space-y-6">
+            <section class="p-4 rounded-xl bg-white/5 border border-white/10">
+              <h2 class="font-semibold mb-2">Tips</h2>
+              <ul class="text-sm text-slate-300 list-disc ml-5 space-y-1">
+                <li>Collect neon fruits to grow and score.</li>
+                <li>Golden fruit = bonus points.</li>
+                <li>Portal fruit warps you near the target.</li>
+                <li>Backquote (`) opens admin for power users.</li>
+              </ul>
+            </section>
+            <section class="p-4 rounded-xl bg-white/5 border border-white/10 space-y-3 text-sm">
+              <h2 class="font-semibold">Game Mode</h2>
+              <select id="modeSelect" class="input w-full">
+                <option value="classic">Classic</option>
+                <option value="timed">Timed (2:00)</option>
+                <option value="daily">Daily Challenge</option>
+              </select>
+              <h2 class="font-semibold">Theme</h2>
+              <select id="themeSelect" class="input w-full">
+                <option value="neo">Neo</option>
+                <option value="retro">Retro</option>
+                <option value="sunset">Sunset</option>
+              </select>
+            </section>
+          </aside>
+        </div>
+      </main>
+
+      <!-- Footer -->
+      <footer class="px-4 sm:px-6 py-6 text-center text-slate-500 text-sm">
+        <span>Snake Neo — Deluxe</span>
+        <span class="mx-2">•</span>
+        <button id="btnExport" class="underline decoration-dotted hover:text-slate-300">Export Data</button>
+        <span class="mx-2">/</span>
+        <button id="btnImport" class="underline decoration-dotted hover:text-slate-300">Import</button>
+      </footer>
+    </div>
+
+    <!-- Leaderboard Modal -->
+    <div id="modalLeaderboard" class="modal hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">Leaderboard</h3>
+          <button class="modal-close" data-close>✕</button>
+        </div>
+        <div class="p-4 sm:p-6">
+          <ol id="lbList" class="space-y-2"></ol>
+        </div>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div id="modalSettings" class="modal hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">Settings</h3>
+          <button class="modal-close" data-close>✕</button>
+        </div>
+        <div class="p-4 sm:p-6 space-y-4 text-sm">
+          <div class="grid grid-cols-2 gap-4">
+            <label class="flex items-center justify-between gap-3">Grid Width
+              <input id="setGridW" type="number" min="10" max="80" class="input" />
+            </label>
+            <label class="flex items-center justify-between gap-3">Grid Height
+              <input id="setGridH" type="number" min="10" max="60" class="input" />
+            </label>
+            <label class="flex items-center justify-between gap-3">Base Speed
+              <input id="setSpeed" type="range" min="1" max="10" class="range" />
+            </label>
+            <label class="flex items-center justify-between gap-3">Wrap Walls
+              <input id="setWrap" type="checkbox" class="toggle" />
+            </label>
+            <label class="flex items-center justify-between gap-3">Obstacles
+              <input id="setObstacles" type="checkbox" class="toggle" />
+            </label>
+            <label class="flex items-center justify-between gap-3">Sound
+              <input id="setSound" type="checkbox" class="toggle" />
+            </label>
+          </div>
+          <div class="pt-2 flex gap-2">
+            <button id="btnApplySettings" class="btn">Apply & Restart</button>
+            <button id="btnResetSettings" class="btn-secondary">Reset Defaults</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div id="modalHelp" class="modal hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">Help & Controls</h3>
+          <button class="modal-close" data-close>✕</button>
+        </div>
+        <div class="p-4 sm:p-6 text-sm space-y-2 text-slate-300">
+          <p>Use Arrow keys or WASD to move. Space to pause, R to reset. On mobile, use the on-screen controls.</p>
+          <p>Golden fruit gives bonus points; Portal fruit warps you to a safe spot.</p>
+          <p>Open the Admin Panel with the backquote (`) key for extra controls and cheats.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Name Input Modal -->
+    <div id="modalName" class="modal hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 class="modal-title">Save your score</h3>
+          <button class="modal-close" data-close>✕</button>
+        </div>
+        <div class="p-4 sm:p-6 space-y-4 text-sm">
+          <p>Your score: <span id="finalScore" class="font-bold"></span></p>
+          <label class="block">Name or initials
+            <input id="playerName" class="input mt-1" maxlength="20" placeholder="Player" />
+          </label>
+          <div class="pt-2 flex gap-2">
+            <button id="btnSaveScore" class="btn">Save</button>
+            <button id="btnSkipSave" class="btn-secondary">Skip</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Admin Panel (toggle with `) -->
+    <div id="adminPanel" class="fixed top-0 right-0 h-full w-[22rem] max-w-[90vw] translate-x-full transition-transform duration-300 z-40">
+      <div class="h-full bg-slate-900/95 backdrop-blur border-l border-white/10 p-4 sm:p-5 overflow-auto">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-lg font-bold">Admin Panel</h3>
+          <button id="btnAdminClose" class="px-2 py-1 rounded-md bg-white/5 hover:bg-white/10 border border-white/10 text-sm">Close</button>
+        </div>
+        <div class="space-y-5 text-sm">
+          <section>
+            <h4 class="font-semibold mb-2">Cheats</h4>
+            <div class="grid grid-cols-2 gap-2">
+              <button data-cheat="addScore" class="btn">+50 Score</button>
+              <button data-cheat="grow" class="btn">Grow +3</button>
+              <button data-cheat="shrink" class="btn-secondary">Shrink -3</button>
+              <button data-cheat="teleportFood" class="btn">Teleport to Food</button>
+              <button data-cheat="spawnGolden" class="btn">Spawn Golden</button>
+              <button data-cheat="spawnPortal" class="btn-secondary">Spawn Portal</button>
+              <button data-cheat="toggleGod" class="btn">Toggle God Mode</button>
+              <button data-cheat="toggleWrap" class="btn-secondary">Toggle Wrap</button>
+            </div>
+          </section>
+          <section>
+            <h4 class="font-semibold mb-2">Runtime</h4>
+            <div class="space-y-3">
+              <label class="flex items-center justify-between gap-3">Speed Multiplier
+                <input id="adminSpeed" type="range" min="0.2" max="3" step="0.1" class="range" />
+              </label>
+              <label class="flex items-center justify-between gap-3">Obstacles
+                <input id="adminObstacles" type="checkbox" class="toggle" />
+              </label>
+              <div class="flex gap-2">
+                <button id="btnAdminReset" class="btn-secondary">Soft Reset</button>
+                <button id="btnAdminHardReset" class="btn-danger">Hard Reset</button>
+              </div>
+            </div>
+          </section>
+          <section>
+            <h4 class="font-semibold mb-2">Storage</h4>
+            <div class="flex gap-2">
+              <button id="btnClearLB" class="btn-secondary">Clear Leaderboard</button>
+              <button id="btnClearAll" class="btn-danger">Factory Reset</button>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+  </html>

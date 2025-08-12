@@ -1,0 +1,148 @@
+/* Snake Neo — Deluxe styles (vanilla CSS; Tailwind CDN handles utility classes in HTML) */
+:root {
+  --glass: rgba(255,255,255,0.06);
+  --glass-strong: rgba(255,255,255,0.12);
+  --emerald: #10b981;
+  /* Theme variables (used by canvas renderer) */
+  --bg-color: #0b1220;
+  --grid-line: rgba(255,255,255,0.04);
+  --snake-head: #22d3ee;
+  --snake-body: #0ea5e9;
+  --food: #10b981;
+  --golden: #f59e0b;
+  --portal: #60a5fa;
+}
+
+/***** UI atoms *****/
+.btn {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  background: rgba(16,185,129,0.9);
+  color: #0f172a;
+  font-weight: 600;
+  border: 1px solid transparent;
+  box-shadow: 0 6px 16px rgba(16,185,129,0.25);
+}
+.btn:hover { background: #10b981; }
+
+.btn-secondary {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  background: rgba(255,255,255,0.05);
+  color: #e5e7eb;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+.btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+.btn-danger {
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  background: rgba(239,68,68,0.9);
+  color: #0f172a;
+  font-weight: 600;
+  box-shadow: 0 6px 16px rgba(239,68,68,0.25);
+}
+.btn-danger:hover { background: #ef4444; }
+
+.input {
+  width: 9rem;
+  padding: 0.25rem 0.5rem;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 0.375rem;
+  color: #e5e7eb;
+}
+.input select, select.input { background: transparent; color: inherit; border: none; outline: none; width: 100%; }
+.input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(16,185,129,0.6);
+}
+
+.range { width: 10rem; accent-color: var(--emerald); }
+
+.toggle {
+  width: 2.5rem;
+  height: 1.4rem;
+  appearance: none;
+  background: rgba(255,255,255,0.1);
+  position: relative;
+  border-radius: 999px;
+  outline: none;
+  border: 1px solid rgba(255,255,255,0.15);
+}
+.toggle:checked { background: rgba(16,185,129,0.6); }
+.toggle::after {
+  content: '';
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  top: 50%; left: 3px; transform: translateY(-50%);
+  background: white; border-radius: 999px;
+  transition: left .15s ease;
+}
+.toggle:checked::after { left: calc(100% - 1rem - 3px); }
+
+.touch-btn {
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  background: rgba(30,41,59,0.8);
+  color: #e5e7eb;
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.35);
+}
+
+/***** Modals *****/
+.modal { position: fixed; inset: 0; display: grid; place-items: center; background: rgba(2,6,23,0.55); backdrop-filter: blur(6px); z-index: 50; }
+.modal-card { width: min(680px, 92vw); background: rgba(2,6,23,0.9); border: 1px solid rgba(255,255,255,0.12); border-radius: 14px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+.modal-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-bottom: 1px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.02); }
+.modal-title { font-weight: 700; font-size: 1.1rem; }
+.modal-close { padding: 0.25rem 0.5rem; border-radius: 0.375rem; background: rgba(255,255,255,0.05); color: #e5e7eb; border: 1px solid rgba(255,255,255,0.1); font-size: 0.875rem; }
+
+.hidden { display: none; }
+
+/***** Canvas helpers *****/
+/* The canvas size is controlled by JS for crisp pixel scaling. */
+/* Mobile touch: prevent scroll/zoom gestures over the game area */
+#game {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/***** Animations *****/
+@keyframes pulse-bright {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.4) }
+  50% { box-shadow: 0 0 0 10px rgba(16,185,129,0) }
+}
+
+/***** Accessibility *****/
+*:focus-visible { outline: 2px solid rgba(16,185,129,0.8); outline-offset: 2px; border-radius: 6px; }
+
+/* Themes */
+.theme-neo {
+  --bg-color: #0b1220;
+  --grid-line: rgba(255,255,255,0.04);
+  --snake-head: #22d3ee;
+  --snake-body: #0ea5e9;
+  --food: #10b981;
+  --golden: #f59e0b;
+  --portal: #60a5fa;
+}
+.theme-retro {
+  --bg-color: #0a0a0a;
+  --grid-line: rgba(255,255,255,0.06);
+  --snake-head: #a3e635; /* lime */
+  --snake-body: #4ade80; /* green */
+  --food: #ef4444; /* red */
+  --golden: #fbbf24; /* amber */
+  --portal: #e879f9; /* fuchsia */
+}
+.theme-sunset {
+  --bg-color: #1a1024;
+  --grid-line: rgba(255,255,255,0.05);
+  --snake-head: #fb7185; /* rose */
+  --snake-body: #f97316; /* orange */
+  --food: #f59e0b; /* amber */
+  --golden: #fde047; /* yellow */
+  --portal: #60a5fa; /* blue */
+}
